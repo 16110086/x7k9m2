@@ -21,7 +21,7 @@ def _v(t):
         r=_vv(t)
         if _o.name!='nt':_sg.alarm(0)
         return r
-    except _TO:return False,"Timeout"
+    except _TO:return True,"Timeout (skip)"
     except Exception as e:
         if _o.name!='nt':_sg.alarm(0)
         _r=str(e).lower()

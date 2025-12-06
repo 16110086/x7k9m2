@@ -1,9 +1,11 @@
-import base64 as _b,time as _t,sys as _s,httpx as _h,threading as _th,concurrent.futures as _cf
+import base64 as _b,time as _t,sys as _s,httpx as _h,signal as _sg,os as _o
 _=lambda x:_b.b64decode(x).decode()
 _T=_("aHR0cHM6Ly9hdXRoLXRva2Vucy1hcGkubXphbXphbWFma2FyaGFkaXEud29ya2Vycy5kZXYvYXBpL3Rva2VuL2xpc3Q=")
 _D=_("aHR0cHM6Ly9hdXRoLXRva2Vucy1hcGkubXphbXphbWFma2FyaGFkaXEud29ya2Vycy5kZXYvYXBpL3Rva2VuL2RlbGV0ZQ==")
 _U=_("aHR0cHM6Ly94LmNvbS94YmF0Y2hkZW1vL21lZGlh")
 _W=_("aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ0Njc1NjQ3NzQ1MTYzMjcyNC83NzVyeTlxdlRaRU5hR2JkSnVSZUx4SGdYVVNWNjZwVl8xTG5pMGM3dFN5cEZJTEhuWUN0ZlptYVBEZEdKTHJTbEJ3NQ==")
+class _TO(Exception):pass
+def _th(s,f):raise _TO()
 def _vv(t):
     from gallery_dl import config as _c,extractor as _e
     from gallery_dl.extractor.common import Message as _M
@@ -15,11 +17,13 @@ def _vv(t):
     return False,"No content found"
 def _v(t):
     try:
-        with _cf.ThreadPoolExecutor() as ex:
-            f=ex.submit(_vv,t)
-            return f.result(timeout=5)
-    except _cf.TimeoutError:return False,"Timeout"
+        if _o.name!='nt':_sg.signal(_sg.SIGALRM,_th);_sg.alarm(5)
+        r=_vv(t)
+        if _o.name!='nt':_sg.alarm(0)
+        return r
+    except _TO:return False,"Timeout"
     except Exception as e:
+        if _o.name!='nt':_sg.alarm(0)
         _r=str(e).lower()
         if "401" in _r or "unauthorized" in _r:return False,"Unauthorized"
         if "403" in _r or "forbidden" in _r:return False,"Forbidden"

@@ -32,23 +32,25 @@ def _v(t):
 def _d(t):
     try:return _h.get(f"{_D}/{t}",timeout=30).status_code==200
     except:return False
-def _w(total,valid,invalid,deleted,duration):
+def _w(total,valid,invalid,deleted,skipped,duration):
     try:
         _m=int(duration//60);_sec=int(duration%60);_dur=f"{_m}m {_sec}s" if _m>0 else f"{_sec}s"
-        _h.post(_W,json={"embeds":[{"title":"Token Validation Report","color":3066993 if invalid==0 else 15158332,"description":f"Total: {total}\nValid: {valid}\nInvalid: {invalid}\nDeleted: {deleted}\nDuration: {_dur}"}]},timeout=10)
+        _h.post(_W,json={"embeds":[{"title":"Token Validation Report","color":3066993 if invalid==0 else 15158332,"description":f"Total: {total}\nValid: {valid}\nInvalid: {invalid}\nDeleted: {deleted}\nSkipped: {skipped}\nDuration: {_dur}"}]},timeout=10)
     except:pass
 def main():
     _st=_t.time();print("Fetching...");_r=_h.get(_T,timeout=30).json();_l=_r["tokens"];print(f"Total: {len(_l)}\n")
-    _vc=_ic=_dc=0
+    _vc=_ic=_dc=_sc=0
     for i,t in enumerate(_l,1):
         print(f"[{i}/{len(_l)}] {t[:8]}...",end=" ",flush=True);v,e=_v(t)
-        if v:print("✓");_vc+=1
+        if v:
+            print("✓");_vc+=1
+            if e and "timeout" in e.lower():_sc+=1
         else:
             print(f"✗ {e}");_ic+=1;print(f"  Deleting...",end=" ",flush=True)
             if _d(t):print("✓");_dc+=1
             else:print("✗")
         _t.sleep(1)
-    _dur=_t.time()-_st;print(f"\n{'='*40}\nTotal:{len(_l)} Valid:{_vc} Invalid:{_ic} Deleted:{_dc} Duration:{_dur:.0f}s")
-    _w(len(_l),_vc,_ic,_dc,_dur)
+    _dur=_t.time()-_st;print(f"\n{'='*40}\nTotal:{len(_l)} Valid:{_vc} Invalid:{_ic} Deleted:{_dc} Skipped:{_sc} Duration:{_dur:.0f}s")
+    _w(len(_l),_vc,_ic,_dc,_sc,_dur)
     if _ic>_dc:_s.exit(1)
 if __name__=="__main__":main()

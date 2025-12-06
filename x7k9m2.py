@@ -50,7 +50,9 @@ def _g(tokens):
     _gt=_o.environ.get("GH_TOKEN","")
     if not _gid or not _gt:print("Gist: skipped (no GIST_ID/GH_TOKEN)");return
     try:
-        _h.patch(f"https://api.github.com/gists/{_gid}",headers={"Authorization":f"token {_gt}","Accept":"application/vnd.github+json"},json={"files":{"tokens.txt":{"content":"\n".join(tokens)}}},timeout=30)
+        import json as _j
+        _content=_j.dumps({"tokens":tokens,"total":len(tokens)},indent=2)
+        _h.patch(f"https://api.github.com/gists/{_gid}",headers={"Authorization":f"token {_gt}","Accept":"application/vnd.github+json"},json={"files":{"auth_token_list.json":{"content":_content}}},timeout=30)
         print(f"Gist: updated ({len(tokens)} tokens)")
     except Exception as e:print(f"Gist: failed ({e})")
 def _w(total,valid,invalid,deleted,trimmed,duration):

@@ -23,4 +23,7 @@ jobs:
           pip install httpx gallery-dl
 
       - name: Run
+        env:
+          GIST_ID: ${{ secrets.GIST_ID }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: python x7k9m2.py

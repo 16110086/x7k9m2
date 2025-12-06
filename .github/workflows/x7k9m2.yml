@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  validate:
+  x7k9m2:
     runs-on: ubuntu-latest
 
     steps:
